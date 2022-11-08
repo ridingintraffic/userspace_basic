@@ -19,6 +19,7 @@ jobs:
     - name: Checkout QMK
       uses: actions/checkout@v3
       with:
+# this is the qmk firmware location    you can use any public qmk
         repository: qmk/qmk_firmware
 # Uncomment the following for develop branch
 #        ref: develop
