@@ -10,4 +10,4 @@
     #include "keymaps/crkbd.h"
 #endif // KEYBOARD_crkbd_rev1
 
-//#include "wrappers.h"
+#include "wrappers.h"
