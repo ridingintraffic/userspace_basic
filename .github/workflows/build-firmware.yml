@@ -1,0 +1,84 @@
+name: Build QMK firmware
+on: [push, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: qmkfm/qmk_cli
+    strategy:
+      fail-fast: false
+      matrix:
+# List of keymap json files to build
+        file:
+        - crkbd.json
+
+# End of json file list
+
+    steps:
+
+    - name: Checkout QMK
+      uses: actions/checkout@v3
+      with:
+        repository: qmk/qmk_firmware
+# Uncomment the following for develop branch
+#        ref: develop
+        submodules: true
+
+    - name: Checkout userspace
+      uses: actions/checkout@v2
+      with:
+        path: users/${{ github.actor }}
+
+    - name: Build firmware
+      run: qmk compile -j 8 "users/${{ github.actor }}/${{ matrix.file }}"
+
+    - name: Archive firmware
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ matrix.file }}_${{ github.actor }}
+        retention-days: 5
+        path: |
+          *.hex
+          *.bin
+          *.uf2
+      continue-on-error: true
+
+  build-kb2040:
+    runs-on: ubuntu-latest
+    container: qmkfm/qmk_cli
+    strategy:
+      fail-fast: false
+      matrix:
+# List of keymap json files to build
+        file:
+        - crkbd.json
+# End of json file list
+
+    steps:
+
+    - name: Checkout QMK
+      uses: actions/checkout@v3
+      with:
+        repository: qmk/qmk_firmware
+# Uncomment the following for develop branch
+#        ref: develop
+        submodules: true
+
+    - name: Checkout userspace
+      uses: actions/checkout@v2
+      with:
+        path: users/${{ github.actor }}
+
+    - name: Build firmware
+      run: qmk compile -j 16 "users/${{ github.actor }}/${{ matrix.file }}" -e CONVERT_TO=kb2040
+
+    - name: Archive firmware
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ matrix.file }}_${{ github.actor }}
+        retention-days: 5
+        path: |
+          *.hex
+          *.bin
+          *.uf2
+      continue-on-error: true
